@@ -1,0 +1,11 @@
+id: anonymous-ldap-bind
+language: Kotlin
+message: Detected anonymous LDAP bind.
+    This permits anonymous users to execute LDAP statements
+
+rule:
+ regex: (?i)(none)
+ pattern: $ENV.put($ANY.SECURITY_AUTHENTICATION, $META)
+
+fix:
+  $ENV.put($ANY.SECURITY_AUTHENTICATION, "simple")

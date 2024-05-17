@@ -1,0 +1,89 @@
+id: cookie-missing-secure-flag-1
+language: Kotlin
+message: A cookie was detected without setting the 'secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'secure' flag by calling '$COOKIE.setSecure(true);'
+
+
+rule:
+  kind: call_expression
+  pattern: $PATTERN
+  all:
+   - has:
+      stopBy: end
+      kind: navigation_expression
+      regex: addCookie
+   - has:
+        stopBy: end
+        kind: value_argument
+        pattern: $COOKIE
+        all:
+         - inside:
+               stopBy: end
+               follows:
+                  stopBy: end
+                  kind: property_declaration
+                  all:
+                     - has:
+                        stopBy: end
+                        kind: type_identifier
+                        pattern: $AAA
+                     - has:
+                        stopBy: end
+                        kind: variable_declaration
+                        has:
+                           stopBy: end
+                           kind: simple_identifier
+                           pattern: $COOKIE
+         - not:
+            inside:
+                  stopBy: end
+                  kind: function_body               
+                  has:
+                     stopBy: end
+                     kind: navigation_expression
+                     pattern: $A
+                     regex: setSecure
+                     all:
+                        - has:
+                           stopBy: end
+                           kind: simple_identifier
+                           pattern: $COOKIE
+                        - has:
+                           stopBy: end
+                           kind: navigation_suffix
+                           has:
+                              stopBy: end
+                              kind: simple_identifier
+                              pattern: $B
+                         
+fix: |-
+   $COOKIE.setSecure(true)
+   $PATTERN
+
+
+
+---
+id: cookie-missing-secure-flag-2
+language: Kotlin
+message: A cookie was detected without setting the 'secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'secure' flag by calling '$COOKIE.setSecure(true);'
+rule:
+   kind: call_expression
+   pattern: $PATTERN1
+   has:
+      stopBy: end
+      kind: navigation_suffix
+      regex: setSecure
+   inside:
+      stopBy: end
+      kind: class_body
+      has:
+         stopBy: end
+         kind: property_declaration
+         has:
+            stopBy: end
+            kind: simple_identifier
+            pattern: $META
+
+fix: 
+   $META.setSecure(true)
+
+        

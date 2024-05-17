@@ -1,0 +1,11 @@
+id: use-of-weak-rsa-key
+language: Kotlin
+message: RSA keys should be at least 2048 bits based on NIST recommendation.
+
+rule:
+ regex: 16|32|64|128|256|512|1024
+ pattern: $KEY.initialize($BITS)
+ kind: call_expression
+
+fix: 
+   $KEY.initialize(2048)
