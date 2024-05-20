@@ -65,16 +65,33 @@ fix: |-
 id: cookie-missing-secure-flag-2
 language: Kotlin
 message: A cookie was detected without setting the 'secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'secure' flag by calling '$COOKIE.setSecure(true);'
+
 rule:
    kind: call_expression
-   pattern: $PATTERN1
-   has:
+   pattern: $PATTERN_
+   all:
+      
+   - has:
       stopBy: end
       kind: navigation_suffix
       regex: setSecure
+   - inside:
+         stopBy: end
+         kind: function_body
+         regex: setHttpOnly
+         has:
+            stopBy: end
+            kind: call_suffix
+            has:
+               stopBy: end
+               kind: value_argument
+               has:
+                  stopBy: end
+                  kind: boolean_literal
+                  regex: 'false'
    inside:
       stopBy: end
-      kind: class_body
+      kind: function_body
       has:
          stopBy: end
          kind: property_declaration
@@ -86,4 +103,24 @@ rule:
 fix: 
    $META.setSecure(true)
 
-        
+
+---
+id: cookie-missing-secure-flag-3
+language: Kotlin
+message: A cookie was detected without setting the 'secure' flag. The 'secure' flag for cookies prevents the client from transmitting the cookie over insecure channels such as HTTP. Set the 'secure' flag by calling '$COOKIE.setSecure(true);'
+
+rule:
+   kind: property_declaration
+   has:
+      stopBy: end
+      kind: variable_declaration
+      pattern: $VAR
+   any:
+   - has:
+      stopBy: end
+      kind: boolean_literal
+      pattern: $VAR_FALSE
+      regex: 'false'
+
+fix: 
+   val $VAR = true
