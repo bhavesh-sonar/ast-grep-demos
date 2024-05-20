@@ -1,0 +1,136 @@
+id: cookie-missing-httponly-1
+language: Kotlin
+message: A cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie. Set the 'HttpOnly' flag by calling 'cookie.setHttpOnly(true);'
+
+rule:
+  kind: call_expression
+  pattern: $PATTERN     
+  all:
+   - has:
+      stopBy: end
+      kind: navigation_expression
+      regex: addCookie
+   - has:
+        stopBy: end
+        kind: value_argument
+        pattern: $COOKIE
+        all:
+         - inside:
+               stopBy: end
+               follows:
+                  stopBy: end
+                  kind: property_declaration
+                  all:
+                     - has:
+                        stopBy: end
+                        kind: type_identifier
+                        pattern: $AAA
+                     - has:
+                        stopBy: end
+                        kind: variable_declaration
+                        has:
+                           stopBy: end
+                           kind: simple_identifier
+                           pattern: $COOKIE
+         - not:
+            inside:
+                  stopBy: end
+                  kind: function_body
+                  has:
+                     stopBy: end
+                     kind: navigation_expression
+                     # pattern: $A
+                     regex: setHttpOnly 
+                     all:
+                        - has:
+                           stopBy: end
+                           kind: simple_identifier
+                           pattern: $COOKIE
+                        - has:
+                           stopBy: end
+                           kind: navigation_suffix
+                           has:
+                              stopBy: end
+                              kind: simple_identifier
+                              pattern: $B
+                        - has:
+                           stopBy: end
+                           kind: simple_identifier
+                           pattern: $COOKIE
+                        - has:
+                           stopBy: end
+                           kind: navigation_suffix
+                           has:
+                              stopBy: end
+                              kind: simple_identifier
+                              # pattern: COOKIE1
+                         
+fix: |-
+   $COOKIE.setHttpOnly(true)
+   $PATTERN                    
+
+
+---
+id: cookie-missing-httponly-2
+language: Kotlin
+message: A cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie. Set the 'HttpOnly' flag by calling 'cookie.setHttpOnly(true);'
+
+rule:
+   kind: call_expression
+   pattern: $PATTERN1
+   all:   
+   - has:
+      stopBy: end
+      kind: navigation_expression
+      regex: setHttpOnly
+   - inside:
+         stopBy: end
+         kind: function_body
+         regex: setHttpOnly
+         has:
+            stopBy: end
+            kind: call_suffix
+            has:
+               stopBy: end
+               kind: value_argument
+               has:
+                  stopBy: end
+                  kind: boolean_literal
+                  regex: 'false'
+
+   inside:
+      stopBy: end
+      kind: function_body
+      has:
+         stopBy: end
+         kind: property_declaration
+         has:
+            stopBy: end
+            kind: simple_identifier
+            pattern: $META
+                                      
+fix: 
+   $META.setHttpOnly(true) 
+
+
+
+---
+id: cookie-missing-httponly-3
+language: Kotlin
+message: A cookie was detected without setting the 'HttpOnly' flag. The 'HttpOnly' flag for cookies instructs the browser to forbid client-side scripts from reading the cookie. Set the 'HttpOnly' flag by calling 'cookie.setHttpOnly(true);' 
+
+rule:
+   kind: property_declaration
+   has:
+      stopBy: end
+      kind: variable_declaration
+      pattern: $VAR
+   any:
+   - has:
+      stopBy: end
+      kind: boolean_literal
+      pattern: $VAR_FALSE
+      regex: 'false'
+
+fix: 
+   val $VAR = true

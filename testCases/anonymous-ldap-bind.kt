@@ -6,8 +6,8 @@ public class Cls {
         val ctx: DirContext = InitialDirContext(env)
     }
 
-    public fun ldapBindSafe(env: Environment): Void {
-        env.put(Context.SECURITY_AUTHENTICATION, "simple")
-        var ctx = InitialDirContext(env)
-    }
+    // public fun ldapBindSafe(env: Environment): Void {
+    //     env.put(Context.SECURITY_AUTHENTICATION, "simple")
+    //     var ctx = InitialDirContext(env)
+    // }
 }

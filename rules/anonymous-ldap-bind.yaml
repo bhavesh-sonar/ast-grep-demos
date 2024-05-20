@@ -4,8 +4,25 @@ message: Detected anonymous LDAP bind.
     This permits anonymous users to execute LDAP statements
 
 rule:
- regex: (?i)(none)
- pattern: $ENV.put($ANY.SECURITY_AUTHENTICATION, $META)
+   kind: call_expression
+   pattern: $ABC
+   all:
+       - has:
+             stopBy: end
+             kind: navigation_expression
+             has: 
+               stopBy: end
+               kind: simple_identifier
+               pattern: $ENV
+       - inside:
+            stopBy: end
+            kind: function_body
+            has:
+                stopBy: end
+                kind: string_literal
+                pattern: $NONE
+                regex: none
+
 
 fix:
-  $ENV.put($ANY.SECURITY_AUTHENTICATION, "simple")
+  $ENV.put(Context.SECURITY_AUTHENTICATION, "simple")
