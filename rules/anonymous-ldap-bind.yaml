@@ -26,3 +26,4 @@ rule:
 
 fix:
   $ENV.put(Context.SECURITY_AUTHENTICATION, "simple")
+  
