@@ -1,4 +1,59 @@
-id: anonymous-ldap-bind
+# id: anonymous-ldap-bind-1
+# language: Kotlin
+# message: Detected anonymous LDAP bind.
+#     This permits anonymous users to execute LDAP statements
+
+# rule:
+#    kind: call_expression
+#    pattern: $ABC
+#    all:
+#        - has:
+#              stopBy: end
+#              kind: navigation_expression
+#              has: 
+#                stopBy: end
+#                kind: simple_identifier
+#                pattern: $ENV
+#        - inside:
+#             stopBy: end
+#             kind: function_body
+#             has:
+#                 stopBy: end
+#                 kind: string_literal
+#                 pattern: $NONE
+#                 regex: none
+
+# fix:
+#   $ENV.put(Context.SECURITY_AUTHENTICATION, "simple")
+
+
+
+# ---
+id: anonymous-ldap-bind-2
+language: Kotlin
+message: Detected anonymous LDAP bind.
+    This permits anonymous users to execute LDAP statements
+
+rule:
+   kind: property_declaration
+   has:
+      stopBy: end
+      kind: variable_declaration
+      pattern: $VAR
+   any:
+   - has:
+      stopBy: end
+      kind: string_literal
+      pattern: $VAR_NONE
+      regex: 'none'
+
+fix: 
+   val $VAR = "simple"
+
+
+
+---
+id: anonymous-ldap-bind-3
 language: Kotlin
 message: Detected anonymous LDAP bind.
     This permits anonymous users to execute LDAP statements
@@ -6,6 +61,11 @@ message: Detected anonymous LDAP bind.
 rule:
    kind: call_expression
    pattern: $ABC
+   not:
+      has:
+         stopBy: end
+         kind: navigation_expression
+         regex: printStackTrace
    all:
        - has:
              stopBy: end
@@ -21,9 +81,7 @@ rule:
                 stopBy: end
                 kind: string_literal
                 pattern: $NONE
-                regex: none
-
-
+                regex: none||anonymous
+             
 fix:
   $ENV.put(Context.SECURITY_AUTHENTICATION, "simple")
-  
