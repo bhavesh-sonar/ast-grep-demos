@@ -26,6 +26,7 @@ rule:
             has:
                stopBy: end
                kind: simple_identifier
+               pattern: $PUT
                regex: ^(put)$
        - inside:
             stopBy: end
@@ -68,7 +69,7 @@ rule:
                               pattern: $ENV
              
 fix:
-  $ENV.put($CONTEXT, "simple")
+  $ENV.$PUT($CONTEXT, "simple")
 
 
 
@@ -106,4 +107,4 @@ rule:
                            stopBy: end
                            kind: value_argument
                            pattern: $VAL
-fix: "simple"
+fix: "simple"  
