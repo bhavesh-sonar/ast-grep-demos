@@ -23,6 +23,8 @@ transform:
 fix: $FIX
 
 
+
+# ---
 # id: defaulthttpclient-is-deprecated
 # language: Kotlin
 # message: DefaultHttpClient is deprecated. Further, it does not       
@@ -87,15 +89,3 @@ fix: $FIX
     #             stopBy: end
     #             kind: simple_identifier
     #             pattern: $BB
-
-
-        
-   
-       
-
-
-         
-         
-
-      
-  

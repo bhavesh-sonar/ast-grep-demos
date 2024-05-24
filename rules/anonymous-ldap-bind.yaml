@@ -1,54 +1,74 @@
-# id: anonymous-ldap-bind-1
-# language: Kotlin
-# message: Detected anonymous LDAP bind.
-#     This permits anonymous users to execute LDAP statements
-
-# rule:
-#    kind: call_expression
-#    pattern: $ABC
-#    all:
-#        - has:
-#              stopBy: end
-#              kind: navigation_expression
-#              has: 
-#                stopBy: end
-#                kind: simple_identifier
-#                pattern: $ENV
-#        - inside:
-#             stopBy: end
-#             kind: function_body
-#             has:
-#                 stopBy: end
-#                 kind: string_literal
-#                 pattern: $NONE
-#                 regex: none
-
-# fix:
-#   $ENV.put(Context.SECURITY_AUTHENTICATION, "simple")
-
-
-
-# ---
-id: anonymous-ldap-bind-2
+id: anonymous-ldap-bind-1
 language: Kotlin
 message: Detected anonymous LDAP bind.
     This permits anonymous users to execute LDAP statements
-
+ 
 rule:
-   kind: property_declaration
-   has:
-      stopBy: end
-      kind: variable_declaration
-      pattern: $VAR
-   any:
-   - has:
-      stopBy: end
-      kind: string_literal
-      pattern: $VAR_NONE
-      regex: 'none'
-
-fix: 
-   val $VAR = "simple"
+   kind: call_expression
+   pattern: $ABC
+   # not:
+   #    has:
+   #       stopBy: end
+   #       kind: navigation_expression
+   #       pattern: $L
+   #       regex: printStackTrace
+   all:
+       - has:
+             stopBy: end
+             kind: navigation_expression
+             has:
+               stopBy: end
+               kind: simple_identifier
+               pattern: $ENV
+       - has:
+            stopBy: end
+            kind: navigation_suffix
+            has:
+               stopBy: end
+               kind: simple_identifier
+               regex: ^(put)$
+       - inside:
+            stopBy: end
+            # kind: function_body
+            all:              
+                - has:
+                    stopBy: end
+                    kind: string_literal
+                    pattern: $NONE
+                    regex: (none||anonymous)
+                - not:
+                    has:
+                      stopBy: end
+                      kind: value_argument
+                      regex: (value)
+                - has:
+                    stopBy: end
+                    kind: value_argument
+                    pattern: $CONTEXT
+                - has:
+                   stopBy: end
+                   kind: parameter
+                   has:
+                     stopBy: end
+                     kind: simple_identifier
+                     pattern: $ENV
+                - has:
+                    stopBy: end
+                    kind: property_declaration
+                    all:
+                      - has:
+                          stopBy: end
+                          kind: call_expression
+                          has:
+                            stopBy: end
+                            kind: value_argument
+                            has:
+                              stopBy: end
+                              kind: simple_identifier
+                              pattern: $ENV
+             
+fix:
+  $ENV.put($CONTEXT, "simple")
 
 
 
@@ -57,31 +77,33 @@ id: anonymous-ldap-bind-3
 language: Kotlin
 message: Detected anonymous LDAP bind.
     This permits anonymous users to execute LDAP statements
-
+ 
 rule:
-   kind: call_expression
-   pattern: $ABC
-   not:
-      has:
-         stopBy: end
-         kind: navigation_expression
-         regex: printStackTrace
-   all:
-       - has:
-             stopBy: end
-             kind: navigation_expression
-             has: 
+   pattern: $VAR
+   kind: string_literal
+   inside:
+      stopBy: end
+      all:
+         - has:
+            stopBy: end
+            kind: property_declaration
+            pattern: $EXP
+            has:
                stopBy: end
                kind: simple_identifier
-               pattern: $ENV
-       - inside:
+               pattern: $VAL
+         - has:
             stopBy: end
-            kind: function_body
-            has:
-                stopBy: end
-                kind: string_literal
-                pattern: $NONE
-                regex: none||anonymous
-             
-fix:
-  $ENV.put(Context.SECURITY_AUTHENTICATION, "simple")
+            kind: function_declaration
+            all:
+               - has:
+                    stopBy: end
+                    kind: call_expression
+                    has:
+                        stopBy: end
+                        kind: value_arguments
+                        has:
+                           stopBy: end
+                           kind: value_argument
+                           pattern: $VAL
+fix: "simple"
