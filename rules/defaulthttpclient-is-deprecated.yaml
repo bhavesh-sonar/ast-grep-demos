@@ -4,15 +4,19 @@ message: DefaultHttpClient is deprecated. Further, it does not
      support connections using TLS1.2, which makes using DefaultHttpClient a security hazard. Use SystemDefaultHttpClient instead, which supports  TLS1.2.
 
 rule:
-  kind: simple_identifier
+  kind: call_expression
   pattern: $PATTERN
-  regex: (DefaultHttpClient)
-  # all:
-  #   - has:
-  #       stopBy: end
-  #       kind: simple_identifier
-  #       pattern: $VAR
-  #       regex: (DefaultHttpClient)
+  all:
+    - has:
+        stopBy: end
+        kind: simple_identifier
+        pattern: $VAR
+        regex: (DefaultHttpClient)
+        not:
+          has:
+            kind: call_suffix
+            has:
+              kind: value_arguments
            
 transform:
   FIX:
@@ -20,72 +24,4 @@ transform:
       by: "SystemDefaultHttpClient"
       replace: "DefaultHttpClient"
       source: $PATTERN
-fix: $FIX
-
-
-
-# ---
-# id: defaulthttpclient-is-deprecated
-# language: Kotlin
-# message: DefaultHttpClient is deprecated. Further, it does not       
-#      support connections using TLS1.2, which makes using DefaultHttpClient a security hazard. Use SystemDefaultHttpClient instead, which supports  TLS1.2.
-
-# rule:
-#   kind: call_expression
-#   pattern: $PATTERN
-#   all:
-#     - has:
-#         stopBy: end
-#         kind: simple_identifier
-#         pattern: $VAR
-#         regex: (DefaultHttpClient)
-           
-# transform:
-#   FIX:
-#     replace:
-#       by: "SystemDefaultHttpClient"
-#       replace: "DefaultHttpClient"
-#       source: $PATTERN
-# fix: $FIX
-
-
-# ---
-# id: defaulthttpclient-is-deprecated-import-statement
-# language: Kotlin
-
-# rule:
-#   kind: import_header
-#   regex: DefaultHttpClient
-#   pattern: $PA  
-#   has:
-#        stopBy: end
-#        kind: identifier
-#        pattern: $META
-#        all:
-#              - has:
-#                   kind: simple_identifier
-#                   regex: DefaultHttpClient
-
-#              - has: 
-#                  kind: simple_identifier
-#                  pattern: $B
-#                  stopBy: neighbor
- 
-       
-    # - has:
-    #     stopBy: end
-    #     kind: import_header
-    #     pattern: $PAT
-    #     has:
-    #       stopBy: end
-    #       kind: identifier
-    #       pattern: $ABC
-    #       all:
-    #         - has:
-    #             stopBy: end
-    #             kind: simple_identifier
-    #             pattern: $XYZ
-    #         - has:
-    #             stopBy: end
-    #             kind: simple_identifier
-    #             pattern: $BB
+fix: $FIX /* import org.apache.http.impl.client.SystemDefaultHttpClient */
