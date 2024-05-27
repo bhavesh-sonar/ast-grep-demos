@@ -1,0 +1,52 @@
+id: no-null-cipher
+language: Kotlin
+message: 'NullCipher was detected. This will not encrypt anything; the cipher text will be the same as the plain text. Use a valid, secure cipher: Cipher.getInstance("AES/CBC/PKCS7PADDING").'
+ 
+rule:
+  kind: call_expression
+  pattern: $NULL
+  regex: (NullCipher)
+  inside:
+      stopBy: end
+      kind: class_body
+      all:          
+        - has:
+            stopBy: end
+            kind: call_expression
+            has:
+              stopBy: end
+              kind: navigation_expression
+              has:
+                stopBy: end
+                kind: simple_identifier
+                pattern: $VA
+        - has:
+            stopBy: end
+            kind: property_declaration
+            has:
+              stopBy: end
+              kind: variable_declaration
+              has:
+                stopBy: end
+                kind: simple_identifier
+                pattern: $VAR
+        - has:
+            stopBy: end
+            kind: parameter
+            has:
+              stopBy: end
+              kind: simple_identifier
+              pattern: $PARAMETER
+        - has:
+            stopBy: end
+            kind: call_suffix
+            has:
+              stopBy: end
+              kind: value_argument
+              has:
+                stopBy: end
+                kind: simple_identifier
+                pattern: $PARAMETER
+
+
+fix: Cipher.getInstance("AES/CBC/PKCS5Padding")
