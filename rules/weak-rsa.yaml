@@ -3,7 +3,7 @@ language: Kotlin
 message: RSA keys should be at least 2048 bits based on NIST recommendation.
 
 rule:
- regex: 16|32|64|128|256|512|1024
+ regex: \b(?:[1-9]?[0-9]|[1-9][0-9]{2}|1[0-9]{3}|20[0-3][0-9]|2040)\b
  pattern: $KEY.initialize($BITS)
  kind: call_expression
 
