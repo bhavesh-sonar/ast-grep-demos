@@ -43,9 +43,33 @@ rule:
                 kind: value_arguments
                 regex: (RSA)
      - has:
-         stopBy: end
-         pattern: $KEY.initialize($BITS)
-         kind: call_expression
-         regex: \b(?:[1-9]?[0-9]|[1-9][0-9]{2}|1[0-9]{3}|20[0-3][0-9]|2040)\b
+          stopBy: end
+          kind: call_expression
+          all:
+            - has:
+                stopBy: end
+                kind: navigation_expression
+                all:                  
+                  - has:
+                      stopBy: end
+                      kind: simple_identifier
+                      pattern: $KEY
+                  - has:
+                      stopBy: end
+                      kind: navigation_suffix
+                      has:
+                        stopBy: end
+                        kind: simple_identifier
+                        pattern: $INITIALIZE
+                        regex: initialize
+            - has:
+                stopBy: end
+                kind: call_suffix
+                has:
+                  stopBy: end
+                  kind: value_argument
+                  pattern: $BITS
+                  regex: \b(?:[1-9]?[0-9]|[1-9][0-9]{2}|1[0-9]{3}|20[0-3][0-9]|2040)\b
+
 fix:
- $KEY.initialize(2048)
+ $KEY.$INITIALIZE(2048)
