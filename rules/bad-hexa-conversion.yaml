@@ -1,0 +1,105 @@
+id: bad-hexa-conversion
+language: Kotlin
+message: Integer.toHexString() strips leading zeroes from each byte if read byte-by-byte. This mistake weakens the hash value computed since it introduces more collisions. Use 'String.format("%02X", ...)' instead.'
+ 
+rule:
+    kind: value_argument
+    pattern: $HEX
+    regex: (toHexString)
+    inside:
+        stopBy: end
+        all:
+            - has:
+                  stopBy: end
+                  kind: function_value_parameters
+                  has:
+                      stopBy: end
+                      kind: parameter
+                      has:
+                          stopBy: end
+                          kind: simple_identifier
+                          pattern: $PASS
+            - has:
+                stopBy: end
+                kind: property_declaration
+                has:                    
+                    stopBy: end
+                    kind: variable_declaration
+                    all:                    
+                        - has:
+                            stopBy: end
+                            kind: simple_identifier
+                            pattern: $MD
+                        - has:
+                            stopBy: end
+                            kind: user_type
+                            pattern: $MESSAGE
+                            regex: MessageDigest
+            - has:
+                  stopBy: end
+                  kind: property_declaration
+                  regex: (getBytes)
+                  all:
+                      - has:
+                            stopBy: end
+                            kind: variable_declaration
+                            has:
+                                stopBy: end
+                                kind: simple_identifier
+                                pattern: $RESULTBYTE
+                      -  has:
+                            stopBy: end
+                            kind: call_expression
+                            all:
+                                - has:
+                                    stopBy: end
+                                    kind: navigation_expression
+                                    all:                                
+                                        - has:
+                                            stopBy: end
+                                            kind: simple_identifier
+                                            pattern: $MD
+                                        - has:
+                                            stopBy: end
+                                            kind: navigation_suffix
+                                            has:
+                                                stopBy: end
+                                                kind: simple_identifier
+                                                pattern: $DIGEST
+                                                regex: digest
+                                - has:
+                                    stopBy: end
+                                    kind: call_suffix
+                                    has:
+                                        stopBy: end
+                                        kind: value_argument
+                                        has:
+                                            stopBy: end
+                                            kind: call_expression
+                                            has:
+                                                stopBy: end
+                                                kind: navigation_expression
+                                                has:
+                                                    stopBy: end
+                                                    kind: simple_identifier
+                                                    pattern: $PASS
+            - has:
+                 stopBy: end
+                 inside:
+                     stopBy: end
+                     kind: for_statement
+                     all:                         
+                        - has:
+                            stopBy: end
+                            kind: variable_declaration
+                            has:
+                                stopBy: end
+                                kind: simple_identifier
+                                pattern: $VAR
+                        - has:
+                            stopBy: end
+                            kind: simple_identifier
+                            pattern: $RESULTBYTE
+
+fix: 
+    String.format("%02X", $VAR)
